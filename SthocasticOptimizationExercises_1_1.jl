@@ -88,3 +88,5 @@ if !is_solved_and_feasible(model)
 end
 
 println("O valor esperado de lucro é de $(-objective_value(model))")
+println("O valor de w $(value([w11,w21,w31,w41,w12,w22,w32,w42,w13,w23,w33,w43]))")
+println("O valor de y $(value([y11,y21,y12,y22,y13,y23]))")

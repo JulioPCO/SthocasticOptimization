@@ -104,5 +104,5 @@ end
 
 println("O valor esperado de lucro é de $(-objective_value(model))")
 
-println("O valor esperado de lucro é de $(value(b))")
-println("O valor esperado de lucro é de $(value(x))")
+println("O valor b $(value(b))")
+println("O valor x $(value(x))")

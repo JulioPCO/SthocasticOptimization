@@ -128,8 +128,8 @@ end
 
 println("O valor esperado de lucro é de $(-objective_value(model))")
 
-println("O valor esperado de lucro é de $(value(b))")
-println("O valor esperado de lucro é de $(value(x))")
-println("O valor esperado de lucro é de $(value(k))")
+println("O valor de b $(value(b))")
+println("O valor de x $(value(x))")
+println("O valor de k $(value(k))")
 
 # basicamente ele seleciona o melhor cenário produz 200 a mais de trigo e 100 a mais de milho para vender e o resto é cana. Os resultados fazem sentido na formulação dos cenários.
