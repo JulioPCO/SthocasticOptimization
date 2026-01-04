@@ -40,49 +40,60 @@ function funcao_valor(x,dist)
 
     JuMP.fix(x_chapeu,x)
 
-    v=0.0
-    pis = 0.0
+    v= []
+    z= []
+    pis = []
+    p=[]
     for (qi,di,pi) in dist
         JuMP.fix(q,qi)
         JuMP.fix(d,di)
         optimize!(m2)
         # Valor esperado da otimização do segundo estágio
-        v+= pi*objective_value(m2)
+        append!(z, objective_value(m2))
+        append!(v,pi*objective_value(m2))
+        append!(p,pi)
         # MULTIPLICADOR DE LAGRANGE DA OTIMIZAÇÃO DE SEGUNDO ESTÁGIO QUE É UTILIZADO NA OTIMIZAÇÃO DO PRIMEIRO ESTÁGIO
-        pis += pi*reduced_cost(x_chapeu)
+        append!(pis, reduced_cost(x_chapeu))
     end
 
-    return v,pis
+    return v,pis,z,p
 end
 
 
 function L_shaped(m1,x0,dist)
     x=m1[:x]
 
-    @variable(m1,theta)
-
     objfun = objective_function(m1)
-    @objective(m1,Max,objfun+theta)
+    @variable(m1, thetas[1:200])
+    # @variable(m1,theta)
+    # @objective(m1,Max,objfun+theta)
+    @objective(m1,Max,objfun+ sum(p[i] * thetas[i] for i in 1:200))
 
     k=0
     xi=x0
     vs = [-Inf]
-    for k in 1 :100
-        v,pis = funcao_valor(xi,dist)
-        gap = abs(vs[end]-v)
+    for k in 1 :2
+        v,pis,z,p = funcao_valor(xi,dist)
 
-        append!(vs,v)
+        gap = abs(vs[end]-sum(v))
+        
+        append!(vs,sum(v))
         if gap<1e-4
             break
         end
+        
+        for (i,a) in enumerate(z)
+            @constraint(m1,thetas[i]<=a+pis[i]*(x - xi))
+        end
 
-        @constraint(m1,theta<=v+pis*(x - xi))
+        
         optimize!(m1)
 
         xi = value.(x)
+        println(xi)
     end
-
-    return value(x),value(theta),k
+    
+    return value(x)
 end
 
 function problema_L_shaped(dist)
@@ -94,18 +105,17 @@ function problema_L_shaped(dist)
     @objective(m1,Max, -100x)
     x0=100
 
-    xs,theta,k = L_shaped(m1,x0,dist)
+    xs = L_shaped(m1,x0,dist)
 
-    return xs,theta
+    return xs
 end
 
 xa=[]
-for j in 1:200
-    x,theta = problema_L_shaped(dist)
+for j in 1:1
+    x = problema_L_shaped(dist)
     append!(xa,x)
 end
 
 println(mean(xa))
-println(theta)
 
 

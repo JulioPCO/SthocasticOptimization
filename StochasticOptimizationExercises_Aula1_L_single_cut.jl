@@ -71,6 +71,7 @@ function L_shaped(m1,x0,dist)
         v,pis = funcao_valor(xi,dist)
         gap = abs(vs[end]-v)
 
+        println(v)
         append!(vs,v)
         if gap<1e-4
             break
@@ -82,6 +83,7 @@ function L_shaped(m1,x0,dist)
         xi = value.(x)
     end
 
+    println(m1)
     return value(x),value(theta),k
 end
 
@@ -100,12 +102,11 @@ function problema_L_shaped(dist)
 end
 
 xa=[]
-for j in 1:200
+for j in 1:20
     x,theta = problema_L_shaped(dist)
     append!(xa,x)
 end
 
 println(mean(xa))
-println(theta)
 
 
